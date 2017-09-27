@@ -3,8 +3,7 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { getVisibleTodos } from '../../reducers';
 import TodoList from '../presentational/TodoList';
-import { toggleTodo } from '../../action-creators';
-import { fetchTodos } from '../../db';
+import * as actions from '../../action-creators';
 
 /*
  * returns props that depend on current state
@@ -19,30 +18,34 @@ const mapStateToProps = (state, { params }) => {
   };
 };
 
-/*
- * shorthand for mapDispatchToProps
- * attributeName: associated callback handler to wrap in dispatch()
- */
-const dispatchToProps = {
-  onTodoClick: toggleTodo
-};
-
 class VisibleTodoList extends Component {
+  fetchData () {
+    const { filter, fetchTodos } = this.props;
+    fetchTodos(filter);
+  }
+
   componentDidMount () {
-    fetchTodos(this.props.filter)
-      .then(todos => console.log(this.props.filter, todos));;
+    this.fetchData();
   }
 
   componentDidUpdate (prevProps) {
     if (this.props.filter !== prevProps.filter) {
-      fetchTodos(this.props.filter)
-        .then(todos => console.log(this.props.filter, todos));;
+      this.fetchData();
     }
   }
 
   render () {
+    const { toggleTodo, ...rest } = this.props;
+    
+    /*
+     * need to manually set onTodoClick 
+     * because the action defined in action-creators
+     * doesn't have the same name
+     */
     return (
-      <TodoList {...this.props} />
+      <TodoList 
+        {...rest} 
+        onTodoClick={toggleTodo} />
     );
   }
 }
@@ -54,7 +57,7 @@ class VisibleTodoList extends Component {
  * pass presentational component since connect() is curried
  */
 VisibleTodoList = withRouter(
-  connect(mapStateToProps, dispatchToProps)(VisibleTodoList)
+  connect(mapStateToProps, actions)(VisibleTodoList)
 );
 
 export default VisibleTodoList;

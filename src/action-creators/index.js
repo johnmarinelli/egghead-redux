@@ -1,4 +1,5 @@
 import { v4 } from 'node-uuid';
+import * as api from '../db';
 
 export const addTodo = (text) => (
   {
@@ -14,3 +15,23 @@ export const toggleTodo = (id) => (
     id
   }
 );
+
+/*
+ * receives server response as argument
+ */
+export const receiveTodos = (filter, response) => ({
+  type: 'RECEIVE_TODOS',
+  filter,
+  response
+});
+
+/*
+ * async action creator
+ * fetchTodos returns a promise that resolves to the action object
+ * receiveTodos is synchronous
+ */
+export const fetchTodos = (filter) => 
+  api.fetchTodos(filter)
+    .then(response => 
+      receiveTodos(filter, response));
+
