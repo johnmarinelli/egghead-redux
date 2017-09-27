@@ -35,3 +35,8 @@ export const fetchTodos = (filter) =>
     .then(response => 
       receiveTodos(filter, response));
 
+
+export const requestTodos = (filter) => ({
+  type: 'REQUEST_TODOS',
+  filter
+});
