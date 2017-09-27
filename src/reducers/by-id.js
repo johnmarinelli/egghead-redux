@@ -1,20 +1,17 @@
 /*
  * state is list of todos indexed by id 
+ * if action has a response field, it's been
+ * through normalizr
  */
 const byId = (state = {}, action) => {
-  /*
-   * top level reducer for todos
-   * delegates logic to the `todo` reducer
-   */
-  switch (action.type) {
-    case 'RECEIVE_TODOS':
-      const nextState = { ...state };
-      action.response.forEach(todo => {
-        nextState[todo.id] = todo;
-      });
-      return nextState;
-    default: return state;
+  if (action.response) {
+    return {
+      ...state,
+      ...action.response.entities.todos
+    };
   }
+
+  return state;
 };
 
 export default byId;

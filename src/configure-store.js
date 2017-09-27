@@ -1,4 +1,5 @@
 import logger from 'redux-logger';
+import thunk from 'redux-thunk';
 import promise from 'redux-promise';
 import { createStore, applyMiddleware } from 'redux';
 import todo from './reducers';
@@ -14,10 +15,22 @@ const addPromiseSupportToDispatch = (store) => (next) => (action) => {
 
   return next(action);
 };
- */
+*/
+
+/*
+ * redux store -> next middleware function -> dispatched action
+ * if action is a function, it is a thunk that wants
+ * store.dispatch injected into it
+ * order of arguments:
+ * otherwise, proceed to next middleware
+const thunk = (store) => (next) => (action) => 
+  typeof action === 'function' ? 
+    action(store.dispatch, store.getState) :
+    next(action);
+*/
 
 const configureStore = () => {
-  const middlewares = [promise, logger];
+  const middlewares = [thunk, logger];
   const store = createStore(todo, applyMiddleware(...middlewares));
   return store;
 };
